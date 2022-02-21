@@ -357,7 +357,7 @@ class DoJobber(object):  # pylint:disable=too-many-instance-attributes
                 '{} => {}'.format(x, self.nodestatus[x])
                 for x in self._retry
                 if self.nodestatus[x]  # pylint:disable=singleton-comparison
-                == False
+                is False
                 and self._retry[x]['tries'] > 0
             ]
             if not retriable:
