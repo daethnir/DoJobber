@@ -1,9 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import dojobber
-
-# These 'from...imports' just decrease typing when making your classes
-from dojobber import Job
 from dojobber import DummyJob
 from dojobber import RunonlyJob
 
@@ -29,5 +25,4 @@ class Top00(DummyJob):
 
 if __name__ == '__main__':
     import sys
-
     sys.stderr.write('This is a library only.\n')
