@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 """DoJobber Tests."""
 
+from . import more_tests
 import logging
-import more_tests
 import unittest
 import dojobber
-import dojobber_example as doex
+from . import dojobber_example as doex
 
 ## We like lint, but DoJobber classes get much longer
 ## if we implement all of the normal best practices
