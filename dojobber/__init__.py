@@ -1,3 +1,5 @@
+"""DoJobber module"""
+
 __all__ = ['DummyJob', 'DoJobber', 'Job', 'RunonlyJob']
 
 from .dojobber import Job
