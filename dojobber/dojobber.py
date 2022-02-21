@@ -17,7 +17,7 @@ from pygraph.classes.digraph import digraph
 
 # Determine if we have external dependencies to generate/show graphs
 try:
-    import pygraph.readwrite.dot as dot
+    from pygraph.readwrite import dot
 except ImportError:
     sys.stderr.write(
         '** Graphs will not be supported'
@@ -43,7 +43,7 @@ if not distutils.spawn.find_executable('display'):
 # pylint:disable=too-few-public-methods
 
 
-class Job(object):  # pylint:disable=too-many-instance-attributes
+class Job:  # pylint:disable=too-many-instance-attributes
     """Job Class."""
 
     TRIES = None  # Override in your Job if desired
@@ -140,17 +140,15 @@ class RunonlyJob(Job):
 
     _run_err = None
 
-    def Check(self, *_, **dummy_kwargs):
+    def Check(self, *_, **__):
         """Fail if Run not run, else return Run result."""
         if self._check_phase == 'check':
             raise RuntimeError(
                 'Runonly node check intentionally fails first time.'
             )
-        else:
-            if self._run_exception:
-                raise self._run_exception  # pylint:disable=raising-bad-type
-            else:
-                return self._run_results
+        if self._run_exception:
+            raise self._run_exception  # pylint:disable=raising-bad-type
+        return self._run_results
 
 
 class DummyJob(Job):
@@ -161,14 +159,12 @@ class DummyJob(Job):
 
     def Check(self, *dummy_args, **dummy_kwargs):
         """Always pass."""
-        pass
 
     def Run(self, *dummy_args, **dummy_kwargs):
         """Always pass."""
-        pass
 
 
-class DoJobber(object):  # pylint:disable=too-many-instance-attributes
+class DoJobber:  # pylint:disable=too-many-instance-attributes
     """DoJobber Class."""
 
     def __init__(self, **kwargs):  # pylint:disable=super-init-not-called
@@ -220,20 +216,16 @@ class DoJobber(object):  # pylint:disable=too-many-instance-attributes
         for obj in reversed(self._objsrun):
             if callable(getattr(obj, 'Cleanup', None)):
                 if self._debug:
-                    sys.stderr.write(
-                        '{}.cleanup running\n'.format(type(obj).__name__)
-                    )
+                    sys.stderr.write(f'{type(obj).__name__}.cleanup running\n')
                 try:
                     obj.Cleanup()
                     if self._debug:
                         sys.stderr.write(
-                            '{}.cleanup: pass\n'.format(type(obj).__name__)
+                            f'{type(obj).__name__}.cleanup: pass\n'
                         )
                 except Exception as err:
                     sys.stderr.write(
-                        '{}.cleanup: fail "{}"\n'.format(
-                            type(obj).__name__, err
-                        )
+                        f'{type(obj).__name__}.cleanup: fail "{err}"\n'
                     )
                     raise
 
@@ -353,12 +345,11 @@ class DoJobber(object):  # pylint:disable=too-many-instance-attributes
             # Only 'False' Jobs (have been tried but failed)
             # are retriable - others were either successful or
             # are blocked by other failed Jobs.
+            # pylint: disable=consider-using-dict-items
             retriable = [
-                '{} => {}'.format(x, self.nodestatus[x])
+                f'{x} => {self.nodestatus[x]}'
                 for x in self._retry
-                if self.nodestatus[x]  # pylint:disable=singleton-comparison
-                is False
-                and self._retry[x]['tries'] > 0
+                if self.nodestatus[x] is False and self._retry[x]['tries'] > 0
             ]
             if not retriable:
                 break
@@ -423,12 +414,12 @@ class DoJobber(object):  # pylint:disable=too-many-instance-attributes
 
             try:
                 obj = self._classmap[nodename]()
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 self._log.error(
                     'Could not create Job "%s" - check its __init__', nodename
                 )
                 if self._verbose:
-                    sys.stderr.write('%s.check: fail\n' % nodename)
+                    sys.stderr.write(f'{nodename}.check: fail\n')
                 if self._debug:
                     sys.stderr.write(
                         '  Could not create job, error was {}\n'.format(
@@ -452,11 +443,11 @@ class DoJobber(object):  # pylint:disable=too-many-instance-attributes
                 obj._check_results = obj.Check(*self._args, **self._kwargs)
                 self._node_succeeded(nodename, obj._check_results)
                 if self._verbose:
-                    sys.stderr.write('{}.check: pass\n'.format(nodename))
+                    sys.stderr.write(f'{nodename}.check: pass\n')
             except Exception as err:  # pylint:disable=broad-except
                 obj._check_exception = err
                 if self._verbose:
-                    sys.stderr.write('%s.check: fail\n' % nodename)
+                    sys.stderr.write(f'{nodename}.check: fail\n')
 
                 # In no_act mode, we only run the first check
                 # and get out of dodge.
@@ -479,11 +470,11 @@ class DoJobber(object):  # pylint:disable=too-many-instance-attributes
                     os.chdir(self._checknrun_cwd)
                     obj._run_results = obj.Run(*self._args, **self._kwargs)
                     if self._verbose:
-                        sys.stderr.write('%s.run: pass\n' % nodename)
+                        sys.stderr.write(f'{nodename}.run: pass\n')
                 except Exception as err:  # pylint:disable=broad-except
                     obj._run_exception = err
                     if self._verbose:
-                        sys.stderr.write('%s.run: fail\n' % nodename)
+                        sys.stderr.write(f'{nodename}.run: fail\n')
                     if self._debug:
                         sys.stderr.write(
                             '  Error was:\n  '
@@ -505,13 +496,11 @@ class DoJobber(object):  # pylint:disable=too-many-instance-attributes
                         nodename, obj._recheck_results
                     )
                     if self._verbose:
-                        sys.stderr.write('%s.recheck: pass\n' % nodename)
+                        sys.stderr.write(f'{nodename}.recheck: pass\n')
                 except Exception as err:  # pylint:disable=broad-except
                     obj._recheck_exception = err
                     if self._verbose:
-                        sys.stderr.write(
-                            '%s.recheck: fail "%s"\n' % (nodename, err)
-                        )
+                        sys.stderr.write(f'{nodename}.recheck: fail "{err}"\n')
                     if self._debug:
                         sys.stderr.write(
                             '  Error was:\n  {}\n'.format(
@@ -530,16 +519,16 @@ class DoJobber(object):  # pylint:disable=too-many-instance-attributes
     def _dot_output(self, fmt='png'):
         """Run dot with specified output format and return output."""
 
-        command = ['dot', '-T%s' % fmt]
-        proc = subprocess.Popen(
+        command = ['dot', f'-T{fmt}']
+        with subprocess.Popen(
             command, stdin=subprocess.PIPE, stdout=subprocess.PIPE
-        )
-        stdout, _ = proc.communicate(dot.write(self.graph).encode())
+        ) as proc:
+            stdout, _ = proc.communicate(dot.write(self.graph).encode())
 
-        if proc.returncode != 0:
-            raise RuntimeError(
-                'Cannot create dot graphs via {}'.format(' '.join(command))
-            )
+            if proc.returncode != 0:
+                raise RuntimeError(
+                    f'Cannot create dot graphs via {" ".join(command)}'
+                )
 
         return stdout
 
@@ -561,10 +550,10 @@ class DoJobber(object):  # pylint:disable=too-many-instance-attributes
             return
 
         image_content = self._dot_output()
-        proc = subprocess.Popen(['display'], stdin=subprocess.PIPE)
-        proc.communicate(image_content)
-        if proc.returncode != 0:
-            raise RuntimeError('Cannot show graph using "display"')
+        with subprocess.Popen(['display'], stdin=subprocess.PIPE) as proc:
+            proc.communicate(image_content)
+            if proc.returncode != 0:
+                raise RuntimeError('Cannot show graph using "display"')
 
     def _init_graph(self):
         """Initialize our graph."""
@@ -573,9 +562,8 @@ class DoJobber(object):  # pylint:disable=too-many-instance-attributes
                 self.graph.add_edge((classname, dep))
         if cycles.find_cycle(self.graph):
             raise RuntimeError(
-                'Programmer error: graph contains cycles "{}"'.format(
-                    cycles.find_cycle(self.graph)
-                )
+                'Programmer error: graph contains cycles "'
+                f'{cycles.find_cycle(self.graph)}"'
             )
 
     def _init_deps(self, theclass):
@@ -601,11 +589,9 @@ class DoJobber(object):  # pylint:disable=too-many-instance-attributes
             else self._default_retry_delay
         )
         if delay < 0:
-            raise RuntimeError(
-                'RETRY_DELAY "{}" cannot be negative'.format(delay)
-            )
+            raise RuntimeError(f'RETRY_DELAY "{delay}" cannot be negative')
         if int(tries) < 1:
-            raise RuntimeError('TRIES "{}" must be >= 1.'.format(tries))
+            raise RuntimeError(f'TRIES "{tries}" must be >= 1.')
 
         self._retry[classname] = {
             # How many more tries we can have
