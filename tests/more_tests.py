@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
+"""More Tests module"""
 
 from dojobber import DummyJob
 from dojobber import RunonlyJob
+
+# pylint:disable=missing-docstring
+# pylint:disable=too-few-public-methods
 
 
 class Passful(DummyJob):
@@ -11,16 +15,15 @@ class Passful(DummyJob):
 class BrokenInit(RunonlyJob):
     DEPS = [Passful]
 
-    def __init__(self):
+    def __init__(self):  # pylint: disable=super-init-not-called
         raise RuntimeError('die die die')
 
-    def Check(self, *dummy_args, **dummy_kwargs):
+    def Check(self, *_, **__):
         return True
 
 
 class Top00(DummyJob):
     DEPS = [BrokenInit]
-    pass
 
 
 if __name__ == '__main__':
