@@ -17,7 +17,6 @@ from . import dojobber_example as doex
 #  # pylint:disable=unused-argument
 
 
-
 class RunonlyTest_Fail(dojobber.RunonlyJob):
     def Run(self, *dummy_args, **dummy_kwargs):
         raise RuntimeError('Are you with the bride or with the failure?')
@@ -29,7 +28,6 @@ class RunonlyTest_Succeed(dojobber.RunonlyJob):
 
 
 class Tests(unittest.TestCase):
-
     def test_default_example(self):
         """Test our example dojobber test results that have some failures."""
         dojob = dojobber.DoJobber()
@@ -62,8 +60,9 @@ class Tests(unittest.TestCase):
         self.assertFalse(dojob.success())
 
         # Verify our exception / return value handling is working
-        self.assertEqual("Remote batteries are dead.",
-                         str(dojob.nodeexceptions['TurnOnTV']))
+        self.assertEqual(
+            "Remote batteries are dead.", str(dojob.nodeexceptions['TurnOnTV'])
+        )
 
     def test_success_example(self):
         """Test our example dojobber that fully passes."""
@@ -75,7 +74,8 @@ class Tests(unittest.TestCase):
             movie='MST3K',
             battery_state='charged',
             couch_space=True,
-            fake_retry_success=True)
+            fake_retry_success=True,
+        )
         dojob.checknrun()
         expected = {
             'CleanCouch': True,
@@ -109,19 +109,24 @@ class Tests(unittest.TestCase):
         dojob.checknrun()
         self.assertTrue(dojob.success())
         self.assertEqual({'RunonlyTest_Succeed': True}, dojob.nodestatus)
-        self.assertEqual('Mitchell!!!',
-                         dojob.noderesults['RunonlyTest_Succeed'])
+        self.assertEqual(
+            'Mitchell!!!', dojob.noderesults['RunonlyTest_Succeed']
+        )
 
     def test_runonly_node_failure(self):
         """Test that a runonly node with a failing Run fails right."""
 
         dojob = dojobber.DoJobber()
-        dojob.configure(RunonlyTest_Fail, default_retry_delay=0, default_tries=1.1)
+        dojob.configure(
+            RunonlyTest_Fail, default_retry_delay=0, default_tries=1.1
+        )
         dojob.checknrun()
         self.assertFalse(dojob.success())
         self.assertEqual({'RunonlyTest_Fail': False}, dojob.nodestatus)
-        self.assertEqual('Are you with the bride or with the failure?',
-                         str(dojob.nodeexceptions['RunonlyTest_Fail']))
+        self.assertEqual(
+            'Are you with the bride or with the failure?',
+            str(dojob.nodeexceptions['RunonlyTest_Fail']),
+        )
 
     def test_runonly_node_no_act(self):
         """Test that a runonly node in no_act mode does not run the Run."""
@@ -131,8 +136,10 @@ class Tests(unittest.TestCase):
         dojob.configure(RunonlyTest_Fail, no_act=True)
         dojob.checknrun()
         self.assertEqual({'RunonlyTest_Fail': False}, dojob.nodestatus)
-        self.assertEqual('Runonly node check intentionally fails first time.',
-                         str(dojob.nodeexceptions['RunonlyTest_Fail']))
+        self.assertEqual(
+            'Runonly node check intentionally fails first time.',
+            str(dojob.nodeexceptions['RunonlyTest_Fail']),
+        )
 
         # A RunonlyJob that has a successful Run method should still fail
         # in no_act mode
@@ -140,8 +147,10 @@ class Tests(unittest.TestCase):
         dojob.configure(RunonlyTest_Succeed, no_act=True)
         dojob.checknrun()
         self.assertEqual({'RunonlyTest_Succeed': False}, dojob.nodestatus)
-        self.assertEqual('Runonly node check intentionally fails first time.',
-                         str(dojob.nodeexceptions['RunonlyTest_Succeed']))
+        self.assertEqual(
+            'Runonly node check intentionally fails first time.',
+            str(dojob.nodeexceptions['RunonlyTest_Succeed']),
+        )
 
     def test_cleanran(self):
         """Test that our cleanup ran."""
@@ -209,62 +218,85 @@ class Tests(unittest.TestCase):
         }
 
         # Everything succeeds
-        expected.update({'Food': True, 'Pizza': True,
-                         'PopcornBowl': True, 'Popcorn': True})
+        expected.update(
+            {'Food': True, 'Pizza': True, 'PopcornBowl': True, 'Popcorn': True}
+        )
         dojob = dojobber.DoJobber()
         dojob.configure(doex.WatchMovie, default_retry_delay=0)
-        dojob.set_args('arg1', movie='Noises Off', battery_state='dead',
-                pizza_success_try=doex.Pizza.TRIES,
-                pop_success_try=doex.Popcorn.TRIES,
-                bowl_success_try=doex.PopcornBowl.TRIES)
+        dojob.set_args(
+            'arg1',
+            movie='Noises Off',
+            battery_state='dead',
+            pizza_success_try=doex.Pizza.TRIES,
+            pop_success_try=doex.Popcorn.TRIES,
+            bowl_success_try=doex.PopcornBowl.TRIES,
+        )
         dojob.checknrun()
         self.assertEqual(expected, dojob.nodestatus)
 
         # PopcornBowl, the first node, fails.
-        expected.update({'Food': None, 'Pizza': True,
-                         'PopcornBowl': False, 'Popcorn': None})
+        expected.update(
+            {'Food': None, 'Pizza': True, 'PopcornBowl': False, 'Popcorn': None}
+        )
         dojob = dojobber.DoJobber()
         dojob.configure(doex.WatchMovie, default_retry_delay=0)
-        dojob.set_args('arg1', movie='Noises Off', battery_state='dead',
-                pizza_success_try=doex.Pizza.TRIES,
-                pop_success_try=doex.Popcorn.TRIES,
-                bowl_success_try=doex.PopcornBowl.TRIES + 1)
+        dojob.set_args(
+            'arg1',
+            movie='Noises Off',
+            battery_state='dead',
+            pizza_success_try=doex.Pizza.TRIES,
+            pop_success_try=doex.Popcorn.TRIES,
+            bowl_success_try=doex.PopcornBowl.TRIES + 1,
+        )
         dojob.checknrun()
         self.assertEqual(expected, dojob.nodestatus)
 
         # Popcorn, the second node, fails
-        expected.update({'Food': None, 'Pizza': True,
-                         'PopcornBowl': True, 'Popcorn': False})
+        expected.update(
+            {'Food': None, 'Pizza': True, 'PopcornBowl': True, 'Popcorn': False}
+        )
         dojob = dojobber.DoJobber()
         dojob.configure(doex.WatchMovie, default_retry_delay=0)
-        dojob.set_args('arg1', movie='Noises Off', battery_state='dead',
-                pizza_success_try=doex.Pizza.TRIES,
-                pop_success_try=doex.Popcorn.TRIES + 1,
-                bowl_success_try=doex.PopcornBowl.TRIES)
+        dojob.set_args(
+            'arg1',
+            movie='Noises Off',
+            battery_state='dead',
+            pizza_success_try=doex.Pizza.TRIES,
+            pop_success_try=doex.Popcorn.TRIES + 1,
+            bowl_success_try=doex.PopcornBowl.TRIES,
+        )
         dojob.checknrun()
         self.assertEqual(expected, dojob.nodestatus)
 
         # Fail our Pizza and Popcorn
-        expected.update({'Food': None, 'Pizza': False,
-                         'PopcornBowl': True, 'Popcorn': False})
+        expected.update(
+            {
+                'Food': None,
+                'Pizza': False,
+                'PopcornBowl': True,
+                'Popcorn': False,
+            }
+        )
         dojob = dojobber.DoJobber()
         dojob.configure(doex.WatchMovie, default_retry_delay=0)
-        dojob.set_args('arg1', movie='Noises Off', battery_state='dead',
-                pizza_success_try=doex.Pizza.TRIES + 1,
-                pop_success_try=doex.Popcorn.TRIES + 1,
-                bowl_success_try=doex.PopcornBowl.TRIES)
+        dojob.set_args(
+            'arg1',
+            movie='Noises Off',
+            battery_state='dead',
+            pizza_success_try=doex.Pizza.TRIES + 1,
+            pop_success_try=doex.Popcorn.TRIES + 1,
+            bowl_success_try=doex.PopcornBowl.TRIES,
+        )
         dojob.checknrun()
         self.assertEqual(expected, dojob.nodestatus)
 
     def test_brokeninit(self):
         """Verify that a broken Job __init__ doesn't kill processing."""
-        expected = {
-            'BrokenInit': False,
-            'Passful': True,
-            'Top00': None,
-        }
+        expected = {'BrokenInit': False, 'Passful': True, 'Top00': None}
         dojob = dojobber.DoJobber(dojobber_loglevel=logging.NOTSET)
-        dojob.configure(more_tests.Top00, default_retry_delay=0, default_tries=1)
+        dojob.configure(
+            more_tests.Top00, default_retry_delay=0, default_tries=1
+        )
         dojob.checknrun()
         self.assertEqual(expected, dojob.nodestatus)
 
