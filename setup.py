@@ -24,17 +24,15 @@ REQUIRES_PYTHON = '>=2.7'
 VERSION = None
 
 # What packages are required for this module to be executed?
-REQUIRED = [
-    'python-graph-core',
-    'python-graph-dot'
-]
+REQUIRED = ['python-graph-core', 'python-graph-dot']
 
 # The rest you shouldn't have to touch too much :)
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 # Import the README and use it as the long-description.
-# Note: this will only work if 'README.rst' is present in your MANIFEST.in file!
+# Note: this will only work if 'README.rst' is present in your
+# MANIFEST.in file!
 with io.open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = '\n' + f.read()
 
@@ -72,7 +70,9 @@ class UploadCommand(Command):
             pass
 
         self.status('Building Source and Wheel (universal) distribution?')
-        os.system('{0} setup.py sdist bdist_wheel --universal'.format(sys.executable))
+        os.system(
+            '{0} setup.py sdist bdist_wheel --universal'.format(sys.executable)
+        )
 
         self.status('Uploading the package to PyPi via Twine?')
         os.system('twine upload dist/*')
@@ -80,7 +80,7 @@ class UploadCommand(Command):
         self.status('Pushing git tags?')
         os.system('git tag v{0}'.format(about['__version__']))
         os.system('git push --tags')
-        
+
         sys.exit()
 
 
@@ -97,7 +97,6 @@ setup(
     packages=find_packages(exclude=('tests',)),
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['mypackage'],
-
     # entry_points={
     #     'console_scripts': ['mycli=mymodule:cli'],
     # },
@@ -106,14 +105,12 @@ setup(
     license='MIT',
     classifiers=[
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
-		'Development Status :: 4 - Beta',
-		'Intended Audience :: Developers',
-		'Topic :: System :: Systems Administration',
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Topic :: System :: Systems Administration',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
     ],
     # $ setup.py publish support.
-    cmdclass={
-        'upload': UploadCommand,
-    },
+    cmdclass={'upload': UploadCommand},
 )
