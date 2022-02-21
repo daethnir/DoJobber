@@ -107,9 +107,7 @@ class Tests(unittest.TestCase):
         dojob.checknrun()
         self.assertTrue(dojob.success())
         self.assertEqual({'RunonlyTestSucceed': True}, dojob.nodestatus)
-        self.assertEqual(
-            'Mitchell!!!', dojob.noderesults['RunonlyTestSucceed']
-        )
+        self.assertEqual('Mitchell!!!', dojob.noderesults['RunonlyTestSucceed'])
 
     def test_runonly_node_failure(self):
         """Test that a runonly node with a failing Run fails right."""
