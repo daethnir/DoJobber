@@ -17,8 +17,8 @@ NAME = 'dojobber'
 DESCRIPTION = ('Job orchestration framework based on'
                ' individual idempotent python classes'
                ' and dependencies.')
-URL = 'https://github.com/ExtraHop/DoJobber'
-EMAIL = 'bri@extrahop.com'
+URL = 'https://github.com/daethnir/DoJobber'
+EMAIL = 'bri@ifokr.org'
 AUTHOR = 'Bri Hatch'
 REQUIRES_PYTHON = '>=2.7'
 VERSION = None
