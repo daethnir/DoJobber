@@ -11,17 +11,16 @@ from . import dojobber_example as doex
 # if we implement all of the normal best practices
 
 # pylint:disable=missing-docstring
-# pylint:disable=no-init
 # pylint:disable=too-few-public-methods
 
 
 class RunonlyTestFail(dojobber.RunonlyJob):
-    def Run(self, *_, **__):  # pylint: disable=R0201
+    def Run(self, *_, **__):
         raise RuntimeError('Are you with the bride or with the failure?')
 
 
 class RunonlyTestSucceed(dojobber.RunonlyJob):
-    def Run(self, *_, **__):  # pylint: disable=R0201
+    def Run(self, *_, **__):
         return 'Mitchell!!!'
 
 

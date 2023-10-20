@@ -30,7 +30,6 @@ from dojobber import RunonlyJob
 #
 # pylint:disable=missing-docstring
 # pylint:disable=invalid-name
-# pylint:disable=no-self-use
 
 # This import is used as part of this contrived
 # example - not needed for general DoJobber use.

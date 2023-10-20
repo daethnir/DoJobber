@@ -278,7 +278,7 @@ class DoJobber:  # pylint:disable=too-many-instance-attributes
         self._args = args
         self._kwargs = kwargs
 
-    def _class_name(self, theclass):  # pylint:disable=no-self-use
+    def _class_name(self, theclass):
         """Returns a class from a class or string rep."""
         if isinstance(theclass, str):
             return theclass
@@ -471,7 +471,7 @@ class DoJobber:  # pylint:disable=too-many-instance-attributes
                     obj._run_results = obj.Run(*self._args, **self._kwargs)
                     if self._verbose:
                         sys.stderr.write(f'{nodename}.run: pass\n')
-                except Exception as err:  # pylint:disable=broad-except
+                except Exception as err:  # pylint:disable=W0718,W0621
                     obj._run_exception = err
                     if self._verbose:
                         sys.stderr.write(f'{nodename}.run: fail\n')
