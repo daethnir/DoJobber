@@ -316,7 +316,7 @@ is. This is done to keep things as pristine as possible between
 Job executions.
 
 TRIES Attribute
---------------
+---------------
 TRIES defines the number of tries (check/run/recheck cycles)
 that the Job is allowed to do before giving up. It must be >= 1.
 
