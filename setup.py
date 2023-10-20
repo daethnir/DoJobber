@@ -14,9 +14,11 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'dojobber'
-DESCRIPTION = ('Job orchestration framework based on'
-               ' individual idempotent python classes'
-               ' and dependencies.')
+DESCRIPTION = (
+    'Job orchestration framework based on'
+    ' individual idempotent python classes'
+    ' and dependencies.'
+)
 URL = 'https://github.com/daethnir/DoJobber'
 EMAIL = 'bri@ifokr.org'
 AUTHOR = 'Bri Hatch'
